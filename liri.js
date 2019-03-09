@@ -1,8 +1,9 @@
 
 require("dotenv").config();
 
+var keys = require("./key");
+
 var request = require("request");
-var keys = require("./keys");
 var Spotify = require("node-spotify-api");
 var fs = require("fs");
 var moment = require("moment");
@@ -32,11 +33,11 @@ var input = process.argv.slice(3).join(" ");
 //OMDB
 
 function getMovie() {
-
+    
     //Grab user input
     var movie = input;
 
-
+console.log(keys.omdb)
     //If user doesn't enter movie, return error
     if (!movie) {
         console.log(red("ERROR"));
@@ -45,8 +46,8 @@ function getMovie() {
     }
 
     //Search OMDB for movie
-    var queryUrl = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=" + keys.omdb;
-    
+    var queryUrl = "http://www.omdbapi.com/?apikey=" + keys.omdb + "&t=" + movie; 
+    console.log(queryUrl)
     request(queryUrl, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             var data = JSON.parse(body);
@@ -93,7 +94,7 @@ function concertThis() {
     request(queryUrl, function (error, response, body) {
         if (!error && response.statusCode === 200) {
             var data = JSON.parse(body);
-            var formatTime = moment(data[0].datetime.slice(0, 10), "YYYY-MM-DD").format("dddd MMMM Do, YYYY");
+            var formatTime = moment(data[0].dateTime.slice(0, 10), "YYYY-MM-DD").format("dddd MMMM Do, YYYY");
             var artistData = [
                 "Venue Name: " + data[0].venue.name,
                 "Venue Location: " + data[0].venue.city + ", " + data[0].venue.country,
@@ -102,7 +103,7 @@ function concertThis() {
 
             fs.appendFile("random.txt", artistData + "\n---------------------------\n", function (err) {
                 if (err) throw err;
-                console.log(bold.blue("NEXT SHOW FOR: " + artist.toUpperCase()) +
+                console.log(("NEXT SHOW FOR: " + artist.toUpperCase()) +
                     "\n\n" + artistData +
                     "\n---------------------------");
             });
